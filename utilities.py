@@ -45,6 +45,10 @@ class ImpossibleMove(Exception):
     pass
 
 
+class MalformedPuzzle(Exception):
+    pass
+
+
 def swap(state, one, the_other):
     """
     Takes a n-puzzle state and two tupples as arguements. Swaps the contents
@@ -55,16 +59,26 @@ def swap(state, one, the_other):
     state[x1][y1], state[x2][y2] = state[x2][y2], state[x1][y1]
     return state
 
+
+def find_blank(state):
+    """
+    Finds the blank square in a puzzle state
+    """
+    for row_num in range(0, len(state)):
+        if '*' in state[row_num]:
+            return (row_num, state[row_num].index('*'),)#coordinates of the *
+    else:
+        raise MalformedPuzzle('No blank tile found.')
+
+
 def left(state):
     """
     Attempts to move the blank tile (*) left and return the new state.
     """
-    for row_num in range(0, len(state)):
-        if '*' in state[row_num]:
-            blank = (row_num, state[row_num].index('*'),)#coordinates of the *
+    blank = find_blank(state)
     left_coord = (blank[0], blank[1] - 1)
     if left_coord[1] < 0:
-        raise ImpossibleMove()
+        raise ImpossibleMove('Can\'t move left, blank tile is on left edge.')
     else:
         return swap(copy.copy(state), blank, left_coord)
 
@@ -73,26 +87,43 @@ def right(state):
     """
     Attempts to move the blank tile (*) right and return the new state.
     """
-    for row in state:
-        if row[-1:] == '*':
-            raise ImpossibleMove()
+    blank = find_blank(state)
+    right_coord = (blank[0], blank[1] + 1)
+    if right_coord[1] > len(state):
+        raise ImpossibleMove('Can\'t move right, blank tile is on right edge.')
+    else:
+        return swap(copy.copy(state), blank, right_coord)
+
 
 
 def up(state):
     """
     Attempts to move the blank tile (*) up and return the new state.
     """
-    if '*' in state[0]:
-        raise ImpossibleMove()
+    blank = find_blank(state)
+    up_coord = (blank[0] - 1, blank[1])
+    if up_coord[0] < 0:
+        raise ImpossibleMove('Can\'t move up, blank tile is on top edge.')
+    else:
+        return swap(copy.copy(state), blank, up_coord)
 
 
 def down(state):
     """
     Attempts to move the blank tile (*) down and return the new state.
     """
-    if '*' in state[-1:]:
-        raise ImpossibleMove()
+    blank = find_blank(state)
+    down_coord = (blank[0] + 1, blank[1])
+    if down_coord[0] > len(state):
+        raise ImpossibleMove('Can\'t move down, blank tile is on bottom edge.')
+    else:
+        return swap(copy.copy(state), blank, down_coord)
 
 
-
+print prettify_state(right(load_state('/home/benjamin/npuzz/puzzle_states/1')))
+print ''
+print prettify_state(down(load_state('/home/benjamin/npuzz/puzzle_states/1')))
+print ''
 print prettify_state(left(load_state('/home/benjamin/npuzz/puzzle_states/1')))
+print ''
+print prettify_state(up(load_state('/home/benjamin/npuzz/puzzle_states/1')))
