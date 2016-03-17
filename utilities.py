@@ -1,8 +1,9 @@
 """
-Various utilities
+Various utilities for the n-puzzle proceedings.
 """
 import pprint
 import copy
+import math
 
 def load_state(path):
     """
@@ -41,6 +42,26 @@ def check_goal(state):
     return True
 
 
+def out_of_place(state):
+    """
+    Calculates and returns the number of positions "out of place" each tile
+    is. For example, if the 1 tile is at the top-right corner position of an
+    8-puzzle, then it would be "2" out of place. If it was in the top left, 
+    it would be 0.
+    """
+    n = len(state)
+    total = 0
+    for row in state:
+        for tile in row:
+            try:
+                y = int(math.floor(float(tile)/n - (float(1)/n)))
+                x = (tile - 1) % n
+            except ValueError:
+                continue
+            total += abs(row.index(tile)-x)
+            total += abs(state.index(row)-y)
+    return total
+
 class ImpossibleMove(Exception):
     pass
 
@@ -51,7 +72,7 @@ class MalformedPuzzle(Exception):
 
 def swap(state, one, the_other):
     """
-    Takes a n-puzzle state and two tupples as arguements. Swaps the contents
+    Takes a n-puzzle state and two tupples as arguments. Swaps the contents
     of one coordinate with the other. Returns the result.
     """
     x1, y1 = one[0], one[1]
@@ -120,10 +141,4 @@ def down(state):
         return swap(copy.copy(state), blank, down_coord)
 
 
-print prettify_state(right(load_state('/home/benjamin/npuzz/puzzle_states/1')))
-print ''
-print prettify_state(down(load_state('/home/benjamin/npuzz/puzzle_states/1')))
-print ''
-print prettify_state(left(load_state('/home/benjamin/npuzz/puzzle_states/1')))
-print ''
-print prettify_state(up(load_state('/home/benjamin/npuzz/puzzle_states/1')))
+print out_of_place(load_state('/home/benjamin/npuzz/puzzle_states/1'))
