@@ -29,19 +29,6 @@ def prettify_state(state):
         for row in state])
 
 
-def check_goal(state):
-    """
-    Returns True if state is the goal state. Otherwise, returns False.
-    """
-    n = len(state[0])
-    for i in range(0, n):
-        for j in range(0, n):
-            if state[i][j] != (j + 1) + (i * n):
-                if not(i == j == (n - 1) and state[i][j] == '*'): 
-                    return False
-    return True
-
-
 def out_of_place(state):
     """
     Calculates and returns the number of positions "out of place" each tile
@@ -110,7 +97,7 @@ def right(state):
     """
     blank = find_blank(state)
     right_coord = (blank[0], blank[1] + 1)
-    if right_coord[1] > len(state):
+    if right_coord[1] == len(state) -1:
         raise ImpossibleMove('Can\'t move right, blank tile is on right edge.')
     else:
         return swap(copy.copy(state), blank, right_coord)
@@ -135,7 +122,7 @@ def down(state):
     """
     blank = find_blank(state)
     down_coord = (blank[0] + 1, blank[1])
-    if down_coord[0] > len(state):
+    if down_coord[0] == len(state) - 1:
         raise ImpossibleMove('Can\'t move down, blank tile is on bottom edge.')
     else:
         return swap(copy.copy(state), blank, down_coord)
