@@ -10,7 +10,12 @@ def load_state(path):
     result = []
     with open(path) as f:
         for line in f:
-            result.append(line.split())
+            result.append([])
+            for square in line.split():
+                try:
+                    result[-1].append(int(square))
+                except ValueError: #if its a * character
+                    result[-1].append(square)
     return result 
 
 
@@ -21,4 +26,18 @@ def print_state(state):
     return pprint.pformat(state)
 
 
-print print_state(load_state('/home/benjamin/npuzz/puzzle_states/1'))
+def check_goal(state):
+    """
+    Returns True if state is the goal state. Otherwise, returns False.
+
+    state is expected to be a 2D array.
+    """
+    n = len(state[0])
+    for i in range(0, n):
+        for j in range(0, n):
+            if state[i][j] != (j + 1) + (i * n):
+                if not(i == j == (n - 1) and state[i][j] == '*'): 
+                    return False
+    return True
+
+print check_goal(load_state('/home/benjamin/npuzz/puzzle_states/1'))
