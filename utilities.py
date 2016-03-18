@@ -29,26 +29,6 @@ def prettify_state(state):
         for row in state])
 
 
-def out_of_place(state):
-    """
-    Calculates and returns the number of positions "out of place" each tile
-    is. For example, if the 1 tile is at the top-right corner position of an
-    8-puzzle, then it would be "2" out of place. If it was in the top left, 
-    it would be 0.
-    """
-    n = len(state)
-    total = 0
-    for row in state:
-        for tile in row:
-            try:
-                y = int(math.floor(float(tile)/n - (float(1)/n)))
-                x = (tile - 1) % n
-            except ValueError:
-                continue
-            total += abs(row.index(tile)-x)
-            total += abs(state.index(row)-y)
-    return total
-
 class ImpossibleMove(Exception):
     pass
 
@@ -72,11 +52,11 @@ def find_blank(state):
     """
     Finds the blank square in a puzzle state
     """
+    print prettify_state(state)
     for row_num in range(0, len(state)):
         if '*' in state[row_num]:
             return (row_num, state[row_num].index('*'),)#coordinates of the *
-    else:
-        raise MalformedPuzzle('No blank tile found.')
+    raise MalformedPuzzle('No blank tile found.')
 
 
 def left(state):
@@ -127,5 +107,3 @@ def down(state):
     else:
         return swap(copy.copy(state), blank, down_coord)
 
-
-print out_of_place(load_state('/home/benjamin/npuzz/puzzle_states/1'))
