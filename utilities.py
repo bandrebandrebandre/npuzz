@@ -25,8 +25,8 @@ def prettify_state(state):
     """
     Returns a prettified puzzle state (or a 2D array in general)
     """
-    return '\n'.join([''.join(['{:4}'.format(str(item)) for item in row]) 
-        for row in state])
+    return '\n\n'.join([''.join(['{:4}'.format(str(item)) for item in row]) 
+        for row in state]).join('\n\n')
 
 
 class ImpossibleMove(Exception):
@@ -52,7 +52,6 @@ def find_blank(state):
     """
     Finds the blank square in a puzzle state
     """
-    print prettify_state(state)
     for row_num in range(0, len(state)):
         if '*' in state[row_num]:
             return (row_num, state[row_num].index('*'),)#coordinates of the *
@@ -68,7 +67,7 @@ def left(state):
     if left_coord[1] < 0:
         raise ImpossibleMove('Can\'t move left, blank tile is on left edge.')
     else:
-        return swap(copy.copy(state), blank, left_coord)
+        return swap(copy.deepcopy(state), blank, left_coord)
 
 
 def right(state):
@@ -77,10 +76,10 @@ def right(state):
     """
     blank = find_blank(state)
     right_coord = (blank[0], blank[1] + 1)
-    if right_coord[1] == len(state) -1:
+    if right_coord[1] == len(state):
         raise ImpossibleMove('Can\'t move right, blank tile is on right edge.')
     else:
-        return swap(copy.copy(state), blank, right_coord)
+        return swap(copy.deepcopy(state), blank, right_coord)
 
 
 
@@ -93,7 +92,7 @@ def up(state):
     if up_coord[0] < 0:
         raise ImpossibleMove('Can\'t move up, blank tile is on top edge.')
     else:
-        return swap(copy.copy(state), blank, up_coord)
+        return swap(copy.deepcopy(state), blank, up_coord)
 
 
 def down(state):
@@ -102,8 +101,8 @@ def down(state):
     """
     blank = find_blank(state)
     down_coord = (blank[0] + 1, blank[1])
-    if down_coord[0] == len(state) - 1:
+    if down_coord[0] == len(state):
         raise ImpossibleMove('Can\'t move down, blank tile is on bottom edge.')
     else:
-        return swap(copy.copy(state), blank, down_coord)
+        return swap(copy.deepcopy(state), blank, down_coord)
 

@@ -1,7 +1,7 @@
 import Queue
 import copy
 from utilities import *
-
+import time
 
 def out_of_place(state):
     """
@@ -23,19 +23,6 @@ def out_of_place(state):
             total += abs(state.index(row)-y)
     return total
 
-class PuzzleSolution:
-    """
-    This is the "scratchpad" that search uses to build up the path 
-    to a solution.
-    """
-    def __init__(self):
-        self.path = []
-
-    def __init__(self, state):
-        self.path = [state]
-
-    def cost(self):
-        return len(self.path)
 
 def check_goal(state):
     """
@@ -50,6 +37,24 @@ def check_goal(state):
     return True
 
 
+def get_path(node, path=[]):
+    path.insert(0, node)
+    if node.parent != None:
+        return get_path(node.parent, path)
+    else:
+        return path
+
+class Node:
+    """
+    A node to be used in the search tree.
+    """
+    def __init__(self, 
+                 state=None, 
+                 parent=None):
+        self.state = state
+        self.parent = parent
+
+
 class NoSolution(Exception):
     pass
 
@@ -58,28 +63,22 @@ def search(state):
     """
     Searches for the goal state. Returns the path to it from state.
     """
-    visited = []
-
     Q = Queue.PriorityQueue()
-    Q.put((0, PuzzleSolution(state)))
+    root_tuple = (out_of_place(state), Node(state=state,)) #(priority, data,)
+    Q.put(root_tuple)
     while not Q.empty():
-        G = Q.get()
-        visited.append(G[1].path[-1:])
-        if check_goal(G[1].path[-1:]):
-            return G[1].path
-        node = G[1].path[-1:]
-        traveled = G[1].cost() + 1
+        best_node = Q.get()[1]
+        print prettify_state(best_node.state)
         for move in [up, down, left, right]:
             try:
-                print prettify_state(node)
-                new_node = move(node)
-                estimate = out_of_place(new_node)
-                solution = copy.copy(G[1])
-                solution.append(new_node)
-                Q.put((traveled + estimate, solution))
+                child = Node(parent=best_node)
+                child.state = move(best_node.state)
+                if check_goal(child.state):
+                    return get_path(child)
+                estimate = out_of_place(child.state)
+                from_root = len(get_path(child))
+                child_tuple = (estimate + from_root, child) #(priority, data,)
+                Q.put(child_tuple)
             except ImpossibleMove:
                 continue
     raise NoSolution()
-
-
-
