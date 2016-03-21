@@ -37,12 +37,14 @@ def check_goal(state):
     return True
 
 
-def get_path(node, path=[]):
-    path.insert(0, node)
-    if node.parent != None:
-        return get_path(node.parent, path)
-    else:
-        return path
+def get_path(node):
+    n = node
+    path = [node]
+    while n.parent != None:
+        n = n.parent
+        path.insert(0, n)
+    return path
+
 
 class Node:
     """
