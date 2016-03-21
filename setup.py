@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 VERSION = '1.0'
 
-requires = []
+requires = ['docopt']
 
 setup(name='npuzz',
       version=VERSION,

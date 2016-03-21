@@ -17,8 +17,8 @@ def random_move(state):
             return option(state)
 
 
-def generate_state(moves=0, n=2):
-    state = load_state('/home/benjamin/npuzz/puzzle_states/%s' % n)
+def generate_state(n=2, moves=0):
+    state = load_state('src/npuzz/npuzz/puzzle_states/%s' % n)
     for i in range(0, moves):
         state = random_move(state)
     return state

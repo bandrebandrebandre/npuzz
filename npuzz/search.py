@@ -63,12 +63,13 @@ def search(state):
     """
     Searches for the goal state. Returns the path to it from state.
     """
+    if check_goal(state):
+        return [Node(state=state)]
     Q = Queue.PriorityQueue()
     root_tuple = (out_of_place(state), Node(state=state,)) #(priority, data,)
     Q.put(root_tuple)
     while not Q.empty():
         best_node = Q.get()[1]
-        print prettify_state(best_node.state)
         for move in [up, down, left, right]:
             try:
                 child = Node(parent=best_node)
