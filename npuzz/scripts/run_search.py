@@ -15,7 +15,7 @@ def run_search(n, moves, heuristic):
     print 'Here is the solution: '
     for i in solution:
         print prettify_state(i.state)
-
+    print 'Path length: ' + str(len(solution))
 
 def run_search_one():
     """

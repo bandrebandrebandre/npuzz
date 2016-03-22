@@ -111,7 +111,6 @@ def search(state, heuristic):
                     visited[state_tuple] = child_tuple[0]
                 else: #We're stuck in a loop, so bail
                     continue
-                print estimate
                 Q.put(child_tuple)
             except ImpossibleMove:
                 continue
