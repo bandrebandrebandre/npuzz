@@ -13,6 +13,7 @@ setup(name='npuzz',
       install_requires=requires,
       entry_points="""\
       [console_scripts]
-      run_search = npuzz.scripts.run_search:main
+      run_search_one = npuzz.scripts.run_search:run_search_one
+      run_search_two = npuzz.scripts.run_search:run_search_two
       """,
       )

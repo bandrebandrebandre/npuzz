@@ -3,7 +3,7 @@ import copy
 from utilities import *
 import time
 
-def out_of_place(state):
+def total_out_of_place(state):
     """
     Calculates and returns the number of positions "out of place" each tile
     is. For example, if the 1 tile is at the top-right corner position of an
@@ -17,12 +17,30 @@ def out_of_place(state):
             try:
                 y = int(math.floor(float(tile)/n - (float(1)/n)))
                 x = (tile - 1) % n
-            except ValueError:
+            except ValueError: #blank tile
                 continue
             total += abs(row.index(tile)-x)
             total += abs(state.index(row)-y)
     return total
 
+
+def num_tiles_not_in_position(state):
+    """
+    Calculates and returns the number of tiles which are not in their
+    final positions.
+    """
+    n = len(state)
+    total = 0
+    for row in state:
+        for tile in row:
+            try:
+                y = int(math.floor(float(tile)/n - (float(1)/n)))
+                x = (tile - 1) % n
+            except ValueError: #blank tile
+                continue
+            if row.index(tile) - x != 0 or state.index(row) - y != 0:
+               total += 1
+    return total
 
 def check_goal(state):
     """
@@ -61,24 +79,25 @@ class NoSolution(Exception):
     pass
 
 
-def search(state):
+def search(state, heuristic):
     """
     Searches for the goal state. Returns the path to it from state.
     """
     if check_goal(state):
         return [Node(state=state)]
     Q = Queue.PriorityQueue()
-    root_tuple = (out_of_place(state), Node(state=state,)) #(priority, data,)
+    root_tuple = (heuristic(state), Node(state=state,)) #(priority, data,)
     Q.put(root_tuple)
     while not Q.empty():
         best_node = Q.get()[1]
+        print prettify_state(best_node.state)
         for move in [up, down, left, right]:
             try:
                 child = Node(parent=best_node)
                 child.state = move(best_node.state)
                 if check_goal(child.state):
                     return get_path(child)
-                estimate = out_of_place(child.state)
+                estimate = heuristic(child.state)
                 from_root = len(get_path(child))
                 child_tuple = (estimate + from_root, child) #(priority, data,)
                 Q.put(child_tuple)
