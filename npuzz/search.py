@@ -82,15 +82,19 @@ class NoSolution(Exception):
 def search(state, heuristic):
     """
     Searches for the goal state. Returns the path to it from state.
+
+    This is A* search.
+
+    Uses "heuristic" as the function for providing underestimates.
     """
     if check_goal(state):
         return [Node(state=state)]
+    visited = {}
     Q = Queue.PriorityQueue()
     root_tuple = (heuristic(state), Node(state=state,)) #(priority, data,)
     Q.put(root_tuple)
     while not Q.empty():
         best_node = Q.get()[1]
-        print prettify_state(best_node.state)
         for move in [up, down, left, right]:
             try:
                 child = Node(parent=best_node)
@@ -100,6 +104,14 @@ def search(state, heuristic):
                 estimate = heuristic(child.state)
                 from_root = len(get_path(child))
                 child_tuple = (estimate + from_root, child) #(priority, data,)
+                state_tuple = tupleify_state(child.state)
+                if state_tuple not in visited:
+                    visited[state_tuple] = len(get_path(child))
+                elif visited[state_tuple] < child_tuple[0]:
+                    visited[state_tuple] = child_tuple[0]
+                else: #We're stuck in a loop, so bail
+                    continue
+                print estimate
                 Q.put(child_tuple)
             except ImpossibleMove:
                 continue

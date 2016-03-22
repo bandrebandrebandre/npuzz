@@ -21,6 +21,16 @@ def load_state(path):
     return result 
 
 
+def tupleify_state(state):
+    """
+    Returns the state as a tuple
+    """
+    temp = []
+    for row in state:
+        temp.append(tuple(row))
+    return tuple(temp)
+
+
 def prettify_state(state):
     """
     Returns a prettified puzzle state (or a 2D array in general)
