@@ -1,25 +1,32 @@
 from utilities import *
-from random import randint
-
-def random_move(state):
-    options = [up, down, left, right]
-    try:
-        option = options[randint(0, 3)]
-        return option(state)
-    except ImpossibleMove:
-        try:
-            options.remove(option)
-            option = options[randint(0, 2)]
-            return option(state)
-        except ImpossibleMove:
-            options.remove(option)
-            option = options[randint(0, 1)]
-            return option(state)
+import random
+from sets import Set
+import copy
 
 
-def generate_state(n=2, moves=0):
+class MoveGenerator:
+    def __init__(self):
+        self.bad_moves = Set([down, right]) #blank always starts in bottom right
+        self.all_moves = Set([up, down, left, right])
+        self.inverse_move_lookup = {up: down, left: right, down: up, right: left}
+
+    def get_move(self, state):
+        remaining_moves = self.all_moves.difference(self.bad_moves)
+        while True:
+            try:
+                candidate_move = random.sample(remaining_moves, 1)[0]
+                result = candidate_move(state)
+                self.bad_moves = Set([self.inverse_move_lookup[candidate_move]])
+                # ^Don't do the inverse of the move you just did next time.
+                return result
+            except ImpossibleMove:
+                self.bad_moves.add(candidate_move)
+                continue
+
+
+def generate_state(n, moves):
     state = load_state('src/npuzz/npuzz/puzzle_states/%s' % n)
+    gen = MoveGenerator()
     for i in range(0, moves):
-        state = random_move(state)
+        state = gen.get_move(state)
     return state
-
