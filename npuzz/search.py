@@ -81,14 +81,17 @@ class NoSolution(Exception):
 
 def search(state, heuristic):
     """
-    Searches for the goal state. Returns the path to it from state.
+    Searches for the goal state. Returns the path to it from "state".
 
     This is A* search.
 
     Uses "heuristic" as the function for providing underestimates.
+
+    If "stats" is True, returns statistics about the search.
     """
     if check_goal(state):
         return [Node(state=state)]
+    total_expanded = 0
     visited = {}
     Q = Queue.PriorityQueue()
     root_tuple = (heuristic(state), Node(state=state,)) #(priority, data,)
@@ -100,11 +103,14 @@ def search(state, heuristic):
                 child = Node(parent=best_node)
                 child.state = move(best_node.state)
                 if check_goal(child.state):
-                    return get_path(child)
+                    return {'path': get_path(child),
+                            'unique visited': len(visited), 
+                            'total expanded': total_expanded}
                 estimate = heuristic(child.state)
                 from_root = len(get_path(child))
                 child_tuple = (estimate + from_root, child) #(priority, data,)
                 state_tuple = tupleify_state(child.state)
+                total_expanded += 1
                 if state_tuple not in visited:
                     visited[state_tuple] = len(get_path(child))
                 elif visited[state_tuple] < child_tuple[0]:

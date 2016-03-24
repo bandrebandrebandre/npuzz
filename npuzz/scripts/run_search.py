@@ -13,9 +13,12 @@ def run_search(n, moves, heuristic):
         print 'Using the "Number of Tiles In Correct Position" heuristic.'
         solution = search(state, num_tiles_not_in_position)
     print 'Here is the solution: '
-    for i in solution:
+    for i in solution['path']:
         print prettify_state(i.state)
-    print 'Path length: ' + str(len(solution))
+    print 'Path length: ' + str(len(solution['path']))
+    print 'Total unique states visited: %s' % str(solution['unique visited'])
+    print 'Total nodes expanded (nonunique included): %s' \
+        % str(solution['total expanded'])
 
 def run_search_one():
     """
@@ -55,3 +58,9 @@ def run_search_two():
     run_search(n=n, moves=moves, heuristic=num_tiles_not_in_position)
 
 
+def compile_stats():
+    state = generate_state(n=n, moves=moves)
+    if heuristic == total_out_of_place:
+        solution = search(state, total_out_of_place)
+    elif heuristic == num_tiles_not_in_position:
+        solution = search(state, num_tiles_not_in_position)
