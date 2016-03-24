@@ -20,6 +20,7 @@ def run_search(n, moves, heuristic):
     print 'Total nodes expanded (nonunique included): %s' \
         % str(solution['total expanded'])
 
+
 def run_search_one():
     """
     Run search on a randomly generated N-puzzle using the "Total Moves 
@@ -59,8 +60,17 @@ def run_search_two():
 
 
 def compile_stats():
-    state = generate_state(n=n, moves=moves)
-    if heuristic == total_out_of_place:
-        solution = search(state, total_out_of_place)
-    elif heuristic == num_tiles_not_in_position:
-        solution = search(state, num_tiles_not_in_position)
+    repeats = 3
+    random_range = 20
+    n_range = 5
+    results = {}
+    for heuristic in [total_out_of_place, num_tiles_not_in_position]:
+        results[str(heuristic)] ={}
+        for n in range(2, n_range):
+            results[str(heuristic)][n] = {}
+            for steps in range(1, random_range):
+                results[str(heuristic)][n][steps] = {}
+                for repeat in range(1, repeats):
+                    results[str(heuristic)][n][steps][repeat] = \
+                        search(generate_state(n, random_range), heuristic)
+    print results
