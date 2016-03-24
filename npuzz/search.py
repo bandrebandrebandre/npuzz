@@ -89,8 +89,6 @@ def search(state, heuristic):
 
     If "stats" is True, returns statistics about the search.
     """
-    if check_goal(state):
-        return [Node(state=state)]
     total_expanded = 0
     visited = {}
     Q = Queue.PriorityQueue()
@@ -105,6 +103,10 @@ def search(state, heuristic):
                 if check_goal(child.state):
                     return {'path': get_path(child),
                             'unique visited': len(visited), 
+                            'total expanded': total_expanded}
+                if len(visited) > 5000:
+                    return {'path': [],
+                            'unique visited': len(visited),
                             'total expanded': total_expanded}
                 estimate = heuristic(child.state)
                 from_root = len(get_path(child))

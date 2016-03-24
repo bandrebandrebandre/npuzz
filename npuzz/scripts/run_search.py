@@ -1,6 +1,8 @@
 from npuzz.search import *
 from npuzz.utilities import *
 from npuzz.gen_puzz import *
+import csv
+from docopt import docopt
 
 def run_search(n, moves, heuristic):
     state = generate_state(n=n, moves=moves)
@@ -32,8 +34,6 @@ def run_search_one():
     Options:
       -h --help               Show this screen.
     """
-    from docopt import docopt
-
     args = docopt(run_search_one.__doc__)
     n = args['<n>']
     moves = int(args['<moves>'])
@@ -51,8 +51,6 @@ def run_search_two():
     Options:
       -h --help               Show this screen.
     """
-    from docopt import docopt
-
     args = docopt(run_search_two.__doc__)
     n = args['<n>']
     moves = int(args['<moves>'])
@@ -60,17 +58,58 @@ def run_search_two():
 
 
 def compile_stats():
-    repeats = 3
-    random_range = 20
-    n_range = 5
+    """
+    Compile a lot of data using both heuristics
+
+    Usage:
+      compile_stats <path_to_output_1> <path_to_output_2>
+
+    Options:
+      -h --help               Show this screen.
+    """
+    args = docopt(compile_stats.__doc__)
+ 
+    repeats = 6
+    random_range = 101
+    n_range = 10
     results = {}
-    for heuristic in [total_out_of_place, num_tiles_not_in_position]:
-        results[str(heuristic)] ={}
-        for n in range(2, n_range):
-            results[str(heuristic)][n] = {}
-            for steps in range(1, random_range):
-                results[str(heuristic)][n][steps] = {}
-                for repeat in range(1, repeats):
-                    results[str(heuristic)][n][steps][repeat] = \
-                        search(generate_state(n, random_range), heuristic)
-    print results
+    heuristic = total_out_of_place
+    out = open(args['<path_to_output_1>'], 'w')
+    writer = csv.writer(out)
+    writer.writerow(['N', 'Level of Randomization', 'Repetition', 'Path Length', 'Unique Nodes Visited', 'Total Nodes Expanded'])
+    for n in range(2, n_range):
+        results[n] = {}
+        for steps in range(1, random_range):
+            results[n][steps] = {}
+            for repeat in range(1, repeats):
+                print 'heuristic= %s n=%i random moves=%i repetition=%i' \
+                    % (str(heuristic), n, steps, repeat,)
+                solution = search(generate_state(n, steps), heuristic)
+                writer.writerow([str(n), 
+                                 str(steps), 
+                                 str(repeat), 
+                                 str(len(solution['path'])),  
+                                 str(solution['unique visited']), 
+                                 str(solution['total expanded'])
+                ])
+    out.close()
+    heuristic = num_tiles_not_in_position
+    out = open(args['<path_to_output_2>'], 'w')
+    writer = csv.writer(out)
+    writer.writerow(['N', 'Level of Randomization', 'Repetition', 'Path Length', 'Unique Nodes Visited', 'Total Nodes Expanded'])
+    for n in range(2, n_range):
+        results[n] = {}
+        for steps in range(1, random_range):
+            results[n][steps] = {}
+            for repeat in range(1, repeats):
+                solution = search(generate_state(n, steps), heuristic)
+                print 'heuristic= %s n=%i random moves=%i repetition=%i' \
+                    % (str(heuristic), n, steps, repeat)
+                writer.writerow([str(n),
+                                 str(steps),
+                                 str(repeat),
+                                 str(len(solution['path'])),
+                                 str(solution['unique visited']),
+                                 str(solution['total expanded'])
+                ])
+    out.close()

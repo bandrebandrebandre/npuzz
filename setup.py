@@ -15,5 +15,6 @@ setup(name='npuzz',
       [console_scripts]
       run_search_one = npuzz.scripts.run_search:run_search_one
       run_search_two = npuzz.scripts.run_search:run_search_two
+      compile_stats = npuzz.scripts.run_search:compile_stats
       """,
       )
